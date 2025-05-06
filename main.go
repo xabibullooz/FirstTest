@@ -17,8 +17,8 @@ func NewNumberGenerator() *NumberGenerator {
 	}
 }
 
-func (ng *NumberGenerator) Generate(min, max int) int {
-	return ng.rng.Intn(max-min+1) + min
+func (ng *NumberGenerator) Generate() int {
+	return ng.rng.Intn(10) + 1
 }
 
 func ReadFromConsole() int {
@@ -29,7 +29,7 @@ func ReadFromConsole() int {
 			log.Fatal("Ошибка ввода:", err)
 		}
 
-		if num < 0 || num > 11 {
+		if num < 1 || num > 10 {
 			fmt.Println("Некорректный ввод. Введите число от 0 до 11")
 			continue
 		}
@@ -37,25 +37,34 @@ func ReadFromConsole() int {
 	}
 }
 
-func CompareNumbers(generated, input int) string {
+func CompareNumbers(generated, input int) (string, bool) {
 	switch {
 	case input == generated:
-		return "Поздравляем! Вы угадали!"
+		return "Поздравляем! Вы угадали!", true
 	case input > generated:
-		return "Ваше число БОЛЬШЕ загаданного, попробуйте еще раз!"
+		return "Ваше число БОЛЬШЕ загаданного, попробуйте еще раз!", false
 	default:
-		return "Ваше число МЕНЬШЕ загаданного, попробуйте еще раз!"
+		return "Ваше число МЕНЬШЕ загаданного, попробуйте еще раз!", false
 	}
 }
 
 func main() {
 	gen := NewNumberGenerator()
-	target := gen.Generate(0, 11)
+	target := gen.Generate()
 
-	fmt.Println("Привет! Давай играть в угайдай число. Введи число которое я загадал")
-	userNum := ReadFromConsole()
+	fmt.Println("Привет! Давай играть в угадай число. Введи число от 0 до 11")
 
-	result := CompareNumbers(target, userNum)
-	fmt.Println(result)
+	for {
+		userNum := ReadFromConsole()
+		result, isCorrect := CompareNumbers(target, userNum)
+		fmt.Println(result)
+
+		if isCorrect {
+			break
+		}
+
+		fmt.Println("Попробуйте еще раз:")
+	}
+
 	fmt.Printf("Загаданное число было: %d\n", target)
 }
